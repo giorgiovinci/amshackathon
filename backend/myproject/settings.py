@@ -114,7 +114,7 @@ TEMPLATE_DIRS = (
 )
 
 INSTALLED_APPS = (
-    'hello',
+    'ams',
 )
 
 # A sample logging configuration. The only tangible logging
