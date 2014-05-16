@@ -8,6 +8,8 @@ handlers:
 - url: .*
   script: myproject.wsgi.application
 
+module: default
+
 libraries:
 - name: django
   version: 1.5
