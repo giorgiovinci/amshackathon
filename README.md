@@ -9,4 +9,17 @@ To deploy run:
 appcfg.py -A phonic-presence-582 update app
 
 To see the update go to:
-http://phonic-presence-582.appspot.com
+http://phonic-presence-582.appspot.com/ams
+
+git commands:
+
+git clone <project url>
+
+git pull
+
+git status
+
+git commit -am "comment"
+git push
+
+git reset --hard # hard reset, will revert my local changes

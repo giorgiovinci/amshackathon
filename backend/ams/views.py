@@ -2,7 +2,7 @@ from django import http
 from django.utils import simplejson as json
 
 event1 = {\
-    "id" : 0, \
+    "id" : 1, \
     "name" : "Van Gogh Museum", \
     "description" : "Come in, now!", \
     "latitude" : 42,\
