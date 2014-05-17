@@ -19,17 +19,19 @@
 		<!-- Google Maps JS assets are loaded at bottom of page for performance -->
 		<script>
 			var storeObject = {};
+			var defaultLatLng;
 			var map;
+			var panorama;
 			/*
 			 * Google Maps documentation: http://code.google.com/apis/maps/documentation/javascript/basics.html
 			 * Geolocation documentation: http://dev.w3.org/geo/api/spec-source.html
 			 */
-			$( document ).on( "pagecreate", "#map-page", function() {
-				var defaultLatLng = new google.maps.LatLng(34.0983425, -118.3267434);  // Default to Hollywood, CA when no geolocation support
-
+			$(document).on( "pagecreate", "#map-page", function() {
+				defaultLatLng = new google.maps.LatLng(52.385249999999999, 4.9217044699999999);
 				if ( navigator.geolocation ) {
 					function success(pos) {
 						// Location found, show map with these coordinates
+						defaultLatLng = new google.maps.LatLng(pos.coords.latitude, pos.coords.longitude);
 						drawMap(new google.maps.LatLng(pos.coords.latitude, pos.coords.longitude));
 						// google.maps.event.addDomListener(window, 'load', initialize);
 					}
@@ -38,7 +40,7 @@
 					}
 					// Find the users current position.  Cache the location for 5 minutes, timeout after 6 seconds
 					navigator.geolocation.getCurrentPosition(success, fail, {maximumAge: 500000, enableHighAccuracy:true, timeout: 6000});
-				} else {
+				}else{
 					drawMap(defaultLatLng);  // No geolocation support, show default map
 				}
 				if (window.DeviceMotionEvent) {
@@ -51,18 +53,15 @@
 				center: latlng,
 				// mapTypeId: google.maps.MapTypeId.ROADMAP
 			};
-			map = new google.maps.Map(document.getElementById("map-canvass"), myOptions);
-			
-			var fenway = new google.maps.LatLng(42.345573,-71.098326);
-			var panoramaOptions = {
-				position: fenway,
-				pov: {
-					heading: 34,
-					pitch: 10
-				}
-			};
-			var panorama = new  google.maps.StreetViewPanorama(document.getElementById('map-canvas'),panoramaOptions);
-			map.setStreetView(panorama);
+			map = new google.maps.Map(document.getElementById("map-canvas"), myOptions);
+			panorama = map.getStreetView();
+			panorama.setPosition(defaultLatLng);
+			panorama.setPov(/** @type {google.maps.StreetViewPov} */({
+				heading: 265,
+				pitch: 0
+			}));
+			panorama.setVisible(true);
+			//map.setStreetView(panorama);
 			var contentString = '<div id="content">'+
 			'<div id="siteNotice">'+
 			'</div>'+
@@ -77,10 +76,12 @@
 			  });
 			// Add an overlay to the map of current lat/lng
 			var marker = new google.maps.Marker({
-				position: latlng,
+				position: defaultLatLng,
 				map: map,
+				//icon: 'http://chart.apis.google.com/chart?chst=d_map_pin_icon&chld=cafe|FFFF00',
 				title: "Greetings!"
 			});
+			
 			google.maps.event.addListener(marker, 'click', function() {
 				/**
 				 * Load Info Window
@@ -157,8 +158,8 @@
 			<div data-role="header" data-theme="a">
 			<h1>Maps</h1>
 			</div>
-			<div role="main" class="ui-content" id="map-canvas">
 			<div class="ui-content" id="map-canvass"></div>
+			<div role="main" class="ui-content" id="map-canvas">
 				<!-- map loads here... -->
 			</div>
 		</div>

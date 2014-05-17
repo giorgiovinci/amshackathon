@@ -82,9 +82,6 @@ DEFAULT_RADIUS = 100.0
 
 forthsquare = ForthSquare()
 twitter = Twitter()
-
-<<<<<<< HEAD
-
     photo = getPhoto(venue['id'])
     if photo:
 #        print photo
@@ -92,11 +89,7 @@ twitter = Twitter()
         if photo.get('response').get('photos').get('count') != 0:
 #            print 'source:', photo.get('response').get('photos').get('items')[0]
             res['photo'] = photo.get('response').get('photos').get('items')[0]
-
-
     return res
-=======
->>>>>>> 61a216a9f7ca2284cfdba41fde188dc1c571e4f4
 
 def venues(request):
 
@@ -203,7 +196,6 @@ def comments(request):
     response["Access-Control-Allow-Origin"] = "*"
     return response
 
-<<<<<<< HEAD
 def getPhoto(id):
     foursquareRequest = 'https://api.foursquare.com/v2/venues/%s/photos?limit=1&sort=recent&oauth_token=%s&v=20140517' % (id, OAUTH_TOKEN)
 
@@ -216,9 +208,6 @@ def getPhoto(id):
     print json_data
 
     return json_data
-=======
-
->>>>>>> 61a216a9f7ca2284cfdba41fde188dc1c571e4f4
 
 def photos(request):
 #    id = '4a688ba1f964a52088ca1fe3'
