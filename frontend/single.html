@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>Google Maps - jQuery Mobile Demos</title>
+		<link rel="stylesheet" href="css/Bootstrap.min.css">
+		<link rel="stylesheet" href="css/jquery.mobile.structure-1.4.0.min.css" />
+		<link rel="stylesheet" href="css/jquery.mobile.icons.min.css" />
+		<link rel="stylesheet" href="css/extra.css" />
+		<style>
+			#map-page, #map-canvas { width: 100%; height: 100%; padding: 0; }
+		</style>
+		
+		<link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Open+Sans:300,400,700">
+		<script src="js/jquery.min.js"></script>
+		<script src="js/jquery.mobile-1.4.2.min.js"></script>
+		<!-- Google Maps JS assets are loaded at bottom of page for performance -->
+		<script>
+			$(document).on("pagecreate", "#single-page", function(){
+
+				var itemJSON = $.parseJSON(localStorage.data);
+				var buildPage = "<div class='container'>";
+				buildPage += "<div class='mainHolder'>";
+				buildPage += "<div class='imageHolder'>";
+				buildPage += "<img class='imageContainer' src='" + itemJSON.shop_image + "'>";
+				buildPage += "</div>";				
+				buildPage += "<div class='mainDetailHolder'>";
+				buildPage += "<div class='titleDetailHolder'>";
+				buildPage += "<h2>" + itemJSON.name + "</h2>";
+				buildPage += "</div>";
+				buildPage += "<div class='addedDetailHolder'>";
+				buildPage += "<p>" + itemJSON.type + "</p>";
+				buildPage += "</div>";
+				buildPage += "</div>";
+				buildPage += "</div>";
+				buildPage += "<div class='descriptionHolder'>";
+				buildPage += itemJSON.description;
+				buildPage += "</div>";				
+				buildPage += "<div class='additionalDetailHolder'>";
+				buildPage += "</div>";
+				buildPage += "</div>";
+				$("#single-page-header").append("<h1 class='ui-title' role='heading'>" + itemJSON.name + "</h1>");
+				$("#single-canvas").append(buildPage);
+
+			});
+
+		</script>
+	</head>
+	<body>
+		<!-- Second Page // Single page // Loads // Single Content -->
+		<div data-role="page" id="single-page" data-url="single-page">
+			<div data-role="header" id="single-page-header" data-theme="a">
+				<a href="http://localhost/ams/amshackathon/frontend/" data-rel="back">Back</a>
+			</div>
+			<div role="main" class="ui-content" id="single-canvas">
+				<!-- single content loads here... -->
+			</div>
+		</div>
+
+		<!-- Load map assets at bottom for performance -->
+		<script type="text/javascript" src="js/jquery.gmap.js"></script>
+		<script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false"></script>
+		<script type="text/javascript" src="http://google-maps-utility-library-v3.googlecode.com/svn/tags/infobox/1.0/src/infobox_packed.js"></script>
+	</body>
+</html>

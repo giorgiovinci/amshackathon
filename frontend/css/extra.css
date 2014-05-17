@@ -1,0 +1,24 @@
+.mainHolder {
+	height: auto;
+	overflow: hidden;
+	margin-top: 15px;
+}
+img.imageContainer {
+	width: 100%;
+}
+.imageHolder {
+	float:left;
+	width:30%;
+	margin-right: 10%;
+}
+.mainDetailHolder {
+	float:left;
+	width: 60%;
+}
+.titleDetailHolder h2 {
+	margin-top: 1px;
+	font-size: 1.3em;	
+}
+.descriptionHolder {
+	margin-top: 15px;	
+}
