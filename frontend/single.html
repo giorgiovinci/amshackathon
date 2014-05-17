@@ -21,7 +21,7 @@
 
 				var itemJSON = $.parseJSON(localStorage.data);
 
-
+				console.log(itemJSON);
 
 				var buildPage = "<div class='container'>";
 				buildPage += "<div class='mainHolder'>";
@@ -53,11 +53,6 @@
 				$("#single-page-header").append("<h1 class='ui-title' role='heading'>" + checkItemExists("title", itemJSON.name) + "</h1>");
 				$("#single-canvas").append(buildPage);
 
-								// console.log(itemJSON);
-				ajaxPullTest(itemJSON.id, "http://10.0.1.54:8080/ams/comments");
-
-
-
 
 				function checkItemExists(type, item) {
 					if (item === undefined) {
@@ -77,17 +72,14 @@
 					return item;
 				}
 
-				function ajaxPullTest(itemID, dataSource) {
-
-					console.log(itemID);
-
+				function ajaxPullTest() {
 					$.ajax({
 						type: "GET",
 						url: dataSource,
 						dataType: "jsonp",
 						crossDomain : true,
-						jsonp:'jsonp',
-						data: { id: itemID },
+						// jsonp:'jsonp',
+						data: { ll: latLngDetails },
 						success: function(data, textStatus, jqXHR) {
 							console.log(data.response.venues.id);
 							// run func or return data
