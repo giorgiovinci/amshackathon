@@ -75,35 +75,13 @@ def tweets(request):
     return response
 '''
 
-'''
-event1 = {\
-    "id" : 1, \
-    "name" : "Van Gogh Museum", \
-    "description" : "Come in, now!", \
-    "latitude" : 42,\
-    "longitude" : 20,\
-    "start" : "08:30",\
-    "end" : "22:30",\
-    "street" : "herengracht",\
-    "number" : "20",\
-    "building" : "",\
-    "shop-image" : "http://instagram.com/some.jpg",\
-    "type" : "museum"\
-  }
 
-def home(request):
-    print "Event: " + str(event1)
-    jsonEvent1 = json.dumps([event1])
-    print "JSON: " + str(jsonEvent1)
-    return http.HttpResponse(jsonEvent1, 
-      content_type='application/json')
-'''
 OAUTH_TOKEN='3NX4ATMVS35LKIP25ZOKIVBRGAHFREKGNHTAKQ5NPGMCWOE0'
 
 DEFAULT_RADIUS = 100.0
 
 forthsquare = ForthSquare()
-
+twitter = Twitter()
 
 
 def venues(request):
@@ -230,6 +208,18 @@ def photos(request):
         return http.DoesNotExist('photo does not exist')
 
     response = http.HttpResponse(json.dumps(json_raw), 
+      content_type='application/json')
+    response["Access-Control-Allow-Origin"] = "*"
+    return response
+
+def tweets(request):
+    radius="0.02km"
+    if not request.GET or not request.GET.get(u'll'):
+      return http.HttpResponseBadRequest('Wrong data')
+
+    pos = request.GET.get(u'll')
+    result = twitter.tweets(radius, pos)
+    response = http.HttpResponse(result, 
       content_type='application/json')
     response["Access-Control-Allow-Origin"] = "*"
     return response
