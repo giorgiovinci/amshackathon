@@ -6,6 +6,7 @@ from google.appengine.api import urlfetch
 import cmath
 import math
 from ams.forthsquare import ForthSquare
+from ams.twitter import Twitter
 
 '''
 #https://github.com/tweepy/tweepy
@@ -106,10 +107,11 @@ forthsquare = ForthSquare()
 
 
 def venues(request):
+
 #    pos = '52.378688,4.900504'
 #    print 'request:', request
 #    logger.debug('request')
-
+    t = Twitter()
     if not request.GET or not request.GET.get(u'll'):
         return http.HttpResponseBadRequest('Wrong data')
 
