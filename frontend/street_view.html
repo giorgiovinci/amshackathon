@@ -62,14 +62,6 @@
 				pitch: 0
 			}));
 			panorama.setVisible(true);
-			  
-			// Add an overlay to the map of current lat/lng
-			var marker = new google.maps.Marker({
-				position: defaultLatLng,
-				map: map,
-				//icon: 'http://chart.apis.google.com/chart?chst=d_map_pin_icon&chld=cafe|FFFF00',
-				title: "Greetings!"
-			});
 			
 			google.maps.event.addListener(panorama, 'position_changed', function() {
 				console.log(panorama.getPosition());
@@ -96,7 +88,8 @@
 					position: newLat,
 					map: map,
 					title: val.name,
-					index: i
+					index: i,
+					icon:'css/images/food.png'
 				});
 				
 				google.maps.event.addListener(mapDetails, 'click', function() {
@@ -106,6 +99,7 @@
 					 localStorage.currentPOI = JSON.stringify(storeObject);
 					 storeObject = val;
 					 localStorage.data = JSON.stringify(storeObject);
+
 					 window.location.href = "single.html";
 				});
 			});
