@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>Google Maps - jQuery Mobile Demos</title>
+		<link rel="stylesheet" href="css/Bootstrap.min.css">
+		<link rel="stylesheet" href="css/jquery.mobile.structure-1.4.0.min.css" />
+		<link rel="stylesheet" href="css/jquery.mobile.icons.min.css" />
+		<link rel="stylesheet" href="css/extra.css" />
+		<style>
+			#map-page, #map-canvas { width: 100%; height: 100%; padding: 0; }
+		</style>
+		
+		<link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Open+Sans:300,400,700">
+		<script src="js/jquery.min.js"></script>
+		<script src="js/orientation.js"></script>
+		<script src="js/jquery.mobile-1.4.2.min.js"></script>
+		<!-- Google Maps JS assets are loaded at bottom of page for performance -->
+		<script>
+			var storeObject = {};
+			var map;
+			/*
+			 * Google Maps documentation: http://code.google.com/apis/maps/documentation/javascript/basics.html
+			 * Geolocation documentation: http://dev.w3.org/geo/api/spec-source.html
+			 */
+			$( document ).on( "pagecreate", "#map-page", function() {
+				var defaultLatLng = new google.maps.LatLng(34.0983425, -118.3267434);  // Default to Hollywood, CA when no geolocation support
+
+				if ( navigator.geolocation ) {
+					function success(pos) {
+						// Location found, show map with these coordinates
+						drawMap(new google.maps.LatLng(pos.coords.latitude, pos.coords.longitude));
+						// google.maps.event.addDomListener(window, 'load', initialize);
+					}
+					function fail(error) {
+						drawMap(defaultLatLng);  // Failed to find location, show default map
+					}
+					// Find the users current position.  Cache the location for 5 minutes, timeout after 6 seconds
+					navigator.geolocation.getCurrentPosition(success, fail, {maximumAge: 500000, enableHighAccuracy:true, timeout: 6000});
+				} else {
+					drawMap(defaultLatLng);  // No geolocation support, show default map
+				}
+				if (window.DeviceMotionEvent) {
+				  window.addEventListener('devicemotion', deviceMotionHandler, false);
+				}
+			})
+		function drawMap(latlng) {
+			var myOptions = {
+				zoom: 10,
+				center: latlng,
+				// mapTypeId: google.maps.MapTypeId.ROADMAP
+			};
+			map = new google.maps.Map(document.getElementById("map-canvass"), myOptions);
+			
+			var fenway = new google.maps.LatLng(42.345573,-71.098326);
+			var panoramaOptions = {
+				position: fenway,
+				pov: {
+					heading: 34,
+					pitch: 10
+				}
+			};
+			var panorama = new  google.maps.StreetViewPanorama(document.getElementById('map-canvas'),panoramaOptions);
+			map.setStreetView(panorama);
+			var contentString = '<div id="content">'+
+			'<div id="siteNotice">'+
+			'</div>'+
+			'<h1 id="firstHeading" class="firstHeading">Uluru</h1>'+
+			'<div id="bodyContent">'+
+			'<p>text</p>'+
+			'</div>'+
+			'</div>';
+
+			  var infowindow = new google.maps.InfoWindow({
+				  content: contentString
+			  });
+			// Add an overlay to the map of current lat/lng
+			var marker = new google.maps.Marker({
+				position: latlng,
+				map: map,
+				title: "Greetings!"
+			});
+			google.maps.event.addListener(marker, 'click', function() {
+				/**
+				 * Load Info Window
+				 * With Current Criteria
+				 * Info about place in question
+				 */ 
+				 infowindow.open(map,marker);
+			});
+			
+			pullDataFromApi("http://phonic-presence-582.appspot.com/ams", latlng);
+		}
+
+		function pullDataFromApi(dataSource, latlng) {
+			var latLngDetails = latlng.k + "," + latlng.A;
+			/*$.ajax({
+			  type: "GET",
+			  url: dataSource,
+			  dataType: "jsonp",
+			  crossDomain : true,
+			  // jsonp:'jsonp',
+			  data: { ll: latLngDetails },
+			  success: function(data, textStatus, jqXHR) {
+				alert(data);
+				console.log(data.response.venues.id);
+				// run func or return data
+			  },
+			  error: function(err) {alert('err' + err);console.log(err);}
+			});*/
+			//for testing only
+			dataSource = "data.json";
+			$.get( dataSource,  { ll: latLngDetails }, function( data ) {
+				placeMarkers(data);
+			});
+			
+		}
+
+		function placeMarkers(data) {
+
+			var mapDetailArray = [];
+			var shape = {
+				coords: [1, 1, 1, 20, 18, 20, 18 , 1],
+				type: 'poly'
+			};
+
+			$.each(data, function(i, val){
+				var newLat = new google.maps.LatLng(val.lat, val.lng);
+				var mapDetails = new google.maps.Marker({
+					position: newLat,
+					map: map,
+					// shape: shape,
+					title: val.name,
+					index: i
+				});
+				google.maps.event.addListener(mapDetails, 'click', function() {
+					/**
+					 * Load Page
+					 * Pop The transition
+					 * Info about place in question
+					 * All other things
+					 */ 
+					 storeObject = val;
+					 console.log(storeObject);
+					 localStorage.data = JSON.stringify(storeObject);
+					 console.log(localStorage.data = JSON.stringify(storeObject));
+					 window.location.href = "single.html";
+				});
+			});
+		}
+	</script>
+	</head>
+	<body>
+		<!-- First Page -->
+		<div data-role="page" id="map-page" data-url="map-page">
+			<div data-role="header" data-theme="a">
+			<h1>Maps</h1>
+			</div>
+			<div role="main" class="ui-content" id="map-canvas">
+			<div class="ui-content" id="map-canvass"></div>
+				<!-- map loads here... -->
+			</div>
+		</div>
+
+		<!-- Load map assets at bottom for performance -->
+		<script type="text/javascript" src="js/jquery.gmap.js"></script>
+		<script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false"></script>
+		<script type="text/javascript" src="http://google-maps-utility-library-v3.googlecode.com/svn/tags/infobox/1.0/src/infobox_packed.js"></script>
+	</body>
+</html>
