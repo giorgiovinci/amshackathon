@@ -55,7 +55,7 @@ class Twitter:
                                include_entities=True,
                                lang="en").items():
             tweetText= tweet.text.encode('UTF-8')
-            tweetList.append({'text': tweetText, 'user_photo':tweet.user.profile_image_url})
+            tweetList.append({'text': tweetText, 'user_name':tweet.user.name, 'user_photo':tweet.user.profile_image_url})
 
             #print json.dumps({'text': tweetText, 'user_photo':tweet.user.profile_image_url})
 
