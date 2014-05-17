@@ -70,7 +70,6 @@
 						map: map,
 						title: "Greetings!"
 					});
-					placeMarkers(pullDataFromApi("http://phonic-presence-582.appspot.com/ams", latlng), map, latlng);
 					google.maps.event.addListener(marker, 'click', function() {
 						/**
 						 * Load Info Window
@@ -79,61 +78,35 @@
 						 */ 
 						 infowindow.open(map,marker);
 					});
+					
+					pullDataFromApi("http://phonic-presence-582.appspot.com/ams", latlng);
 				}
 
 				function pullDataFromApi(dataSource, latlng) {
-
 					var latLngDetails = latlng.k + "," + latlng.A;
-
-					console.log( latLngDetails );
-
-					$.ajax({
+					/*$.ajax({
 					  type: "GET",
 					  url: dataSource,
 					  dataType: "jsonp",
 					  crossDomain : true,
 					  // jsonp:'jsonp',
 					  data: { ll: latLngDetails },
-					  success: function(data) {
-
+					  success: function(data, textStatus, jqXHR) {
+						alert(data);
 					  	console.log(data.response.venues.id);
 					  	// run func or return data
 					  },
-					  error: function() {}
+					  error: function(err) {alert('err' + err);console.log(err);}
+					});*/
+					//for testing only
+					dataSource = "data.json";
+					$.get( dataSource,  { ll: latLngDetails }, function( data ) {
+						placeMarkers(data);
 					});
-
-					var data = {
-						0: {
-							"shop_image": "http://static.guim.co.uk/sys-images/Film/Pix/pictures/2011/10/11/1318348403506/All-the-fun-of-the-fur----007.jpg", 
-							"description": "Come in, now!", 
-							"number": "20", 
-							"street": "herengracht", 
-							"id": 1, 
-							"building": "", 
-							"end": "22:30", 
-							"name": "Van Gogh Museum", 
-							"longitude": 4.767424, 
-							"start": "08:30", 
-							"latitude": 52.307687, 
-							"type": "museum"}, 
-						1: {
-							"shop_image": "http://static.guim.co.uk/sys-images/Film/Pix/pictures/2011/10/11/1318348403506/All-the-fun-of-the-fur----007.jpg", 
-							"description": "Come in, now!", 
-							"number": "20", 
-							"street": "herengracht", 
-							"id": 2, 
-							"building": "", 
-							"end": "22:30", 
-							"name": "Van Gogh Museum2", 
-							"longitude":4.8731, 
-							"start": "08:30", 
-							"latitude": 52.3389,  
-							"type": "museum"}
-					};
-					return data;
+					
 				}
 
-				function placeMarkers(data, map, origLat) {
+				function placeMarkers(data) {
 
 					var mapDetailArray = [];
 					var shape = {
@@ -142,7 +115,7 @@
 					};
 
 					$.each(data, function(i, val){
-						var newLat = new google.maps.LatLng(val.latitude, val.longitude);
+						var newLat = new google.maps.LatLng(val.lat, val.lng);
 						var mapDetails = new google.maps.Marker({
 							position: newLat,
 							map: map,
