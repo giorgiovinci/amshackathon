@@ -1,3 +1,6 @@
+.container {
+	font-family: 'Open Sans', sans-serif;
+}
 .mainHolder {
 	height: auto;
 	overflow: hidden;
@@ -5,6 +8,8 @@
 }
 img.imageContainer {
 	width: 100%;
+	border-radius: 5px;
+	border: 1px solid #eee;
 }
 .imageHolder {
 	float:left;
@@ -17,8 +22,36 @@ img.imageContainer {
 }
 .titleDetailHolder h2 {
 	margin-top: 1px;
-	font-size: 1.3em;	
+	font-size: 1.3em;
+	margin-bottom: 5px;	
 }
 .descriptionHolder {
-	margin-top: 15px;	
+	margin-top: 15px;
+	font-size: 13px;
+	padding-bottom: 15px;
+	border-top: 1px solid #E6E6E6;
+	padding: 30px 0;
+	border-bottom: 1px solid #E6E6E6;
+}
+.descriptionHolder h3 {
+	margin-top: 0;
+}
+.descriptionHolder.noTopBorder {
+	border-top: 0px;
+	margin-top: 0;
+}
+.add-link {
+	font-size: 12px;
+	color: #3B688B;
+}
+.add-link:hover {
+	font-size: 12px;
+	color: #3B688B;
+}
+.addedDetailHolder p {
+	margin-top: 0px;
+}
+.addedDetailHolder p span {
+	margin-bottom: 5px;
+	display: block;
 }

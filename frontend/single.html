@@ -20,28 +20,83 @@
 			$(document).on("pagecreate", "#single-page", function(){
 
 				var itemJSON = $.parseJSON(localStorage.data);
+
+				// console.log(itemJSON);
+				ajaxPullTest(itemJSON.id, "http://10.0.1.54:8080/ams/comments");
+
 				var buildPage = "<div class='container'>";
 				buildPage += "<div class='mainHolder'>";
 				buildPage += "<div class='imageHolder'>";
-				buildPage += "<img class='imageContainer' src='" + itemJSON.shop_image + "'>";
+
+				buildPage += "<img class='imageContainer' src='" + checkItemExists("image", itemJSON.photo) + "'>";
+
 				buildPage += "</div>";				
 				buildPage += "<div class='mainDetailHolder'>";
 				buildPage += "<div class='titleDetailHolder'>";
-				buildPage += "<h2>" + itemJSON.name + "</h2>";
+				buildPage += "<h2>" + checkItemExists("title", itemJSON.name) + "</h2>";
 				buildPage += "</div>";
 				buildPage += "<div class='addedDetailHolder'>";
-				buildPage += "<p>" + itemJSON.type + "</p>";
+				buildPage += "<p>" + checkItemExists("category", itemJSON.type) + "</p>";
 				buildPage += "</div>";
 				buildPage += "</div>";
 				buildPage += "</div>";
 				buildPage += "<div class='descriptionHolder'>";
-				buildPage += itemJSON.description;
+				buildPage += "<h3>Description:</h3>";
+				buildPage += checkItemExists("desc", itemJSON.description);
 				buildPage += "</div>";				
-				buildPage += "<div class='additionalDetailHolder'>";
+				buildPage += "<div class='descriptionHolder noTopBorder'>";
+				buildPage += "<h3>Address:</h3>";
+				buildPage += checkItemExists("title", itemJSON.name)  + "<br />";
+				buildPage += checkItemExists("title", itemJSON.address)  + "<br />";
+				buildPage += checkItemExists("title", itemJSON.postalCode)  + "<br />";
 				buildPage += "</div>";
 				buildPage += "</div>";
-				$("#single-page-header").append("<h1 class='ui-title' role='heading'>" + itemJSON.name + "</h1>");
+				$("#single-page-header").append("<h1 class='ui-title' role='heading'>" + checkItemExists("title", itemJSON.name) + "</h1>");
 				$("#single-canvas").append(buildPage);
+
+
+
+
+				function checkItemExists(type, item) {
+					if (item === undefined) {
+						if (type === "desc") {
+							return "<p><span>No description has been added!</span><p><a class='add-link' href='#'>Add a Category</a> ";
+						} else if (type === "title") {
+							return "No title";	
+						} else if (type === "category") {
+							return "<span>This item hasn't been assigned to a category yet!</span> <a class='add-link' href='#'>Add a Category</a>";
+						} else if (type === "image") {
+							return "http://placehold.it/800x800&text=No+Image";
+						}
+					}
+					if (type === "image") {
+						return item["prefix"] + "360x360" + item["suffix"];
+					}
+					return item;
+				}
+
+				function ajaxPullTest(itemID, dataSource) {
+
+					console.log(itemID);
+
+					$.ajax({
+						type: "GET",
+						url: dataSource,
+						dataType: "jsonp",
+						crossDomain : true,
+						// jsonp:'jsonp',
+						data: { id: itemID },
+						success: function(data, textStatus, jqXHR) {
+							alert(data);
+							console.log(data.response.venues.id);
+							// run func or return data
+						},
+						error: function(err) {
+							alert('err' + err);
+							console.log(err);
+						}
+					});
+				}
 
 			});
 

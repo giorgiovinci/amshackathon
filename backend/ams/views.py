@@ -140,6 +140,16 @@ def getVenueData(venue):
     if 'formattedPhone' in venue.get('contact'):
         res['formattedPhone'] = venue.get('contact').get('formattedPhone')
 
+
+    photo = getPhoto(venue['id'])
+    if photo:
+#        print photo
+#        print type(photo)
+        if photo.get('response').get('photos').get('count') != 0:
+#            print 'source:', photo.get('response').get('photos').get('items')[0]
+            res['photo'] = photo.get('response').get('photos').get('items')[0]
+
+
     return res
 
 
@@ -247,6 +257,19 @@ def comments(request):
     response["Access-Control-Allow-Origin"] = "*"
     return response
 
+def getPhoto(id):
+    foursquareRequest = 'https://api.foursquare.com/v2/venues/%s/photos?limit=1&sort=recent&oauth_token=%s&v=20140517' % (id, OAUTH_TOKEN)
+
+    foursquareResponse = urllib2.urlopen(foursquareRequest)
+    json_raw = foursquareResponse.read()
+    if not json_raw:
+        return None
+
+    json_data = json.loads(json_raw)
+    print json_data
+
+    return json_data
+
 def photos(request):
 #    id = '4a688ba1f964a52088ca1fe3'
     if not request.GET or not request.GET.get(u'id'):
@@ -259,6 +282,9 @@ def photos(request):
     foursquareResponse = urllib2.urlopen(foursquareRequest)
     json_raw = foursquareResponse.read()
 #    json_data = json.loads(json_raw)
+
+    if not json_raw:
+        return http.DoesNotExist('photo does not exist')
 
     response = http.HttpResponse(json.dumps(json_raw), 
       content_type='application/json')
