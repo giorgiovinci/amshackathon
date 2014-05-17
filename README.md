@@ -5,8 +5,8 @@ https://console.developers.google.com/start/appengine
 
 google app id: phonic-presence-582
 
-To run locally:
-dev_appserver.py <backend_path>
+To run locally (and allow everyone to see):
+dev_appserver.py --host 0.0.0.0 <backend_path>
 
 To deploy remote run:
 appcfg.py -A phonic-presence-582 update app
