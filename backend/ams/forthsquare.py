@@ -1,6 +1,7 @@
 from google.appengine.ext import ndb
 from google.appengine.api import urlfetch
 from django.utils import simplejson as json
+from google.appengine.api import memcache
 
 import urllib2
 import logging
@@ -9,7 +10,16 @@ import math
 
 
 OAUTH_TOKEN='3NX4ATMVS35LKIP25ZOKIVBRGAHFREKGNHTAKQ5NPGMCWOE0'
-
+'''
+    greetings = memcache.get('%s:greetings' % guestbook_name)
+    if greetings is not None:
+        return greetings
+    else:
+        greetings = self.render_greetings(guestbook_name)
+        if not memcache.add('%s:greetings' % guestbook_name, greetings, 10):
+            logging.error('Memcache set failed.')
+        return greetings
+'''
 
 class ForthSquare:
 
@@ -17,6 +27,30 @@ class ForthSquare:
 
   logger = logging.getLogger(__name__)
 
+  def venues(self, pos, limit, radius, categories):
+    cacheId = pos+limit+radius+categories
+    print 'cacheId: ' + cacheId
+    json_data = memcache.get(cacheId)
+    
+    if json_data is not None:
+      print('From cache!!')
+      return json_data
+    else:
+      json_data = self.getVenues(pos, limit, radius, categories)
+      print 'mem stats: ' + str(memcache.get_stats())
+      if not memcache.add(cacheId, json_data, 1000):
+            print('********** MEM CACHE ERROR *****')
+            logging.error('Memcache set failed.')
+      print 'mem stats: ' + str(memcache.get_stats())
+      return json_data
+
+  def getVenues(self, pos, limit, radius, categories):
+    foursquareRequest = 'https://api.foursquare.com/v2/venues/search?ll=%s&oauth_token=%s&v=20140517' % (pos, OAUTH_TOKEN) + limit + radius + categories
+    print('Request: \n' + foursquareRequest)
+    foursquareResponse = urllib2.urlopen(foursquareRequest)
+    json_raw = foursquareResponse.read()
+    json_data = json.loads(json_raw)
+    return json_data
 
   def venueInRadarRange(lat0, lng0, alpha, beta, gamma, radius, spreadAngle, lat, lng, distance):
       #TODO:implement the function
