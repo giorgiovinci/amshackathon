@@ -55,3 +55,41 @@ img.imageContainer {
 	margin-bottom: 5px;
 	display: block;
 }
+
+.commentOpen .imageContainer {
+	float: left;
+	width: 20%;
+	margin-right: 5%;
+}
+.imageContainer img {
+	width: 100%;
+	border-radius: 8px;
+}
+
+#commentHolder h3 {
+	font-family: 'Open Sans', sans-serif;
+	font-size: 14px;
+	margin: 30px 0 18px;
+}
+.commentOpen {
+	height: auto;
+	overflow: hidden;
+	margin-bottom: 15px;
+}
+.commentOpen p {
+	font-family: 'Open Sans', sans-serif;
+	margin: 0;
+	font-size: 13px;
+}
+.commentOpen .messageContainer {
+	float: left;
+	width: 70%;
+}
+.messageTextHolder p {
+	font-size: 12px;
+	margin-top: -1px;
+}
+.commentOpen .nameContainer p  {
+	margin-top: 6px;
+}
+
