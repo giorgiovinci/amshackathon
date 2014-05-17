@@ -124,6 +124,25 @@ def venueInRadarRange(lat0, lng0, alpha, beta, gamma, radius, spreadAngle, lat, 
     return result
 
 
+def getVenueData(venue):
+    res = { 
+    'lat'  : venue.get('location').get('lat'),
+    'lng'  : venue.get('location').get('lng'),
+    'id'   : venue['id'].encode("utf-8"),
+    'name' : venue['name'].encode("utf-8") }
+
+    if 'address' in venue.get('location'):
+        res['address'] = venue.get('location').get('address')
+
+    if 'postalCode' in venue.get('location'):
+        res['postalCode'] = venue.get('location').get('postalCode')
+
+    if 'formattedPhone' in venue.get('contact'):
+        res['formattedPhone'] = venue.get('contact').get('formattedPhone')
+
+    return res
+
+
 def home(request):
 #    pos = '52.378688,4.900504'
 #    print 'request:', request
@@ -139,7 +158,7 @@ def home(request):
     lng0 = float(pos.split(',')[1])
     print '0-point coord:', lat0, lng0
 
-    foursquareRequest = 'https://api.foursquare.com/v2/venues/search?ll=%s&oauth_token=%s&v=20140517' % (pos, OAUTH_TOKEN)
+    foursquareRequest = 'https://api.foursquare.com/v2/venues/search?ll=%s&limit=5&radius=%s&oauth_token=%s&v=20140517' % (pos, DEFAULT_RADIUS, OAUTH_TOKEN)
     foursquareResponse = urllib2.urlopen(foursquareRequest)
     json_raw = foursquareResponse.read()
     json_data = json.loads(json_raw)
@@ -175,13 +194,17 @@ def home(request):
                 print 'lng:', lng
                 print 'distance:', distance
                 if venueInRadarRange(lat0, lng0, alpha, beta, gamma, radius, DEFAULT_SPREAD_ANGLE, lat, lng, distance):
-                    venuesInRadar.append(i)
+#                    res = {'lat' : lat, 'lng': lng, 'id' : i['id'].encode("utf-8"), 'name' : i['name'].encode("utf-8") }
+                    venuesInRadar.append(getVenueData(i))
 
         print len(venuesInRadar)
         print venuesInRadar
         print 'point3'
     else:
-        venuesInRadar = venues
+        venuesInRadar = list()
+        for i in venues:
+            venuesInRadar.append(getVenueData(i))
+
     '''
         if len(venuesInRadar) == 1:
             # return detailed information
@@ -191,8 +214,10 @@ def home(request):
             return response
     '''
 
+    print venuesInRadar
+    print type(venuesInRadar)
     print 'point4'
-    response = http.HttpResponse(venuesInRadar, 
+    response = http.HttpResponse(json.dumps(venuesInRadar), 
       content_type='application/json')
     response["Access-Control-Allow-Origin"] = "*"
     return response
@@ -217,7 +242,25 @@ def comments(request):
     json_raw = foursquareResponse.read()
 #    json_data = json.loads(json_raw)
 
-    response = http.HttpResponse(json_raw, 
+    response = http.HttpResponse(json.dumps(json_raw), 
+      content_type='application/json')
+    response["Access-Control-Allow-Origin"] = "*"
+    return response
+
+def photos(request):
+#    id = '4a688ba1f964a52088ca1fe3'
+    if not request.GET or not request.GET.get(u'id'):
+        return http.HttpResponseBadRequest('Wrong data')
+
+    id = request.GET.get(u'id')
+
+    foursquareRequest = 'https://api.foursquare.com/v2/venues/%s/photos?limit=1&sort=recent&oauth_token=%s&v=20140517' % (id, OAUTH_TOKEN)
+
+    foursquareResponse = urllib2.urlopen(foursquareRequest)
+    json_raw = foursquareResponse.read()
+#    json_data = json.loads(json_raw)
+
+    response = http.HttpResponse(json.dumps(json_raw), 
       content_type='application/json')
     response["Access-Control-Allow-Origin"] = "*"
     return response
