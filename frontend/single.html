@@ -21,14 +21,10 @@
 
 				var itemJSON = $.parseJSON(localStorage.data);
 
-				console.log(itemJSON);
-
 				var buildPage = "<div class='container'>";
 				buildPage += "<div class='mainHolder'>";
 				buildPage += "<div class='imageHolder'>";
-
 				buildPage += "<img class='imageContainer' src='" + checkItemExists("image", itemJSON.photo) + "'>";
-
 				buildPage += "</div>";				
 				buildPage += "<div class='mainDetailHolder'>";
 				buildPage += "<div class='titleDetailHolder'>";
@@ -51,9 +47,19 @@
 				buildPage += "</div>";
 				buildPage += "</div>";
 				$("#single-page-header").append("<h1 class='ui-title' role='heading'>" + checkItemExists("title", itemJSON.name) + "</h1>");
-				$("#single-canvas").append(buildPage);
+				$("#one").append(buildPage);
+				$("#two").append("<div id='commentHolder'><h3>Comments:</h3></div>");
 
 
+				/**
+				 * Call the AJAX method
+				 */
+				ajaxPullComments(itemJSON.id, "http://10.0.1.54:8080/ams/comments/");
+
+				/**
+				 * Chech the item
+				 * Exists in the Object
+				 */
 				function checkItemExists(type, item) {
 					if (item === undefined) {
 						if (type === "desc") {
@@ -64,31 +70,74 @@
 							return "<span>This item hasn't been assigned to a category yet!</span> <a class='add-link' href='#'>Add a Category</a>";
 						} else if (type === "image") {
 							return "http://placehold.it/800x800&text=No+Image";
+						} else if (type === "message") {
+							return "<span>Unfortunately no message has been left.</span>";
+						} else if (type === "name") {
+							return "<span>Anon.</span>";
+						} else if (type === "likes") {
+							return "0 likes";
+						}  else if (type === "date") {
+							return "";
 						}
 					}
 					if (type === "image") {
 						return item["prefix"] + "360x360" + item["suffix"];
-					}
+					} 
 					return item;
 				}
 
-				function ajaxPullTest() {
+				/**
+				 * Display the data
+				 * With this method
+				 */
+				function displayUserComments(data) {
+					var commentData = data.response;
+					var commentConcat = "";
+					var commentCount = data.response.tips.items.length;
+					if (commentCount === 0) {
+						commentConcat = "<div class='commentOpen'><p>This user has 0 comments.</p></div>";
+					} else {
+						$.each(commentData.tips.items, function(i, value) {
+							var buildCommentHTML = "<div class='commentOpen'>";
+							buildCommentHTML += "<div class='imageContainer'>";
+							buildCommentHTML += "<img src='" + checkItemExists("image", value.user.photo) + "'>";
+							buildCommentHTML += "</div>";						
+							buildCommentHTML += "<div class='messageContainer'>";
+							buildCommentHTML += "<div class='messageTextHolder'>";
+							buildCommentHTML += "<p>" + checkItemExists("message", value.text) + "</p>";
+							buildCommentHTML += "</div>";
+							buildCommentHTML += "<div class='nameContainer'>";
+							buildCommentHTML += "<p><strong>" + checkItemExists("name", value.user.firstName) + "</strong> has " + checkItemExists("likes", value.likes.summary) + "</p>";
+							buildCommentHTML += "</div>";						
+							buildCommentHTML += "</div>";
+							buildCommentHTML += "</div>";
+							commentConcat += buildCommentHTML;
+						});						
+					}
+
+					$("#commentHolder").append(commentConcat);
+
+				}
+
+				/**
+				 * Use AJAX to pull the comments
+				 */
+				function ajaxPullComments(itemID, dataSource) {
 					$.ajax({
 						type: "GET",
 						url: dataSource,
-						dataType: "jsonp",
+						dataType: "json",
 						crossDomain : true,
-						// jsonp:'jsonp',
-						data: { ll: latLngDetails },
+						data: { id: itemID },
 						success: function(data, textStatus, jqXHR) {
-							console.log(data.response.venues.id);
-							// run func or return data
+							displayUserComments($.parseJSON(data));
 						},
 						error: function(err) {
 							console.log(err);
 						}
 					});
 				}
+
 
 			});
 
@@ -100,8 +149,31 @@
 			<div data-role="header" id="single-page-header" data-theme="a">
 				<a href="http://localhost/ams/amshackathon/frontend/" data-rel="back">Back</a>
 			</div>
+
 			<div role="main" class="ui-content" id="single-canvas">
 				<!-- single content loads here... -->
+
+
+				<div data-role="tabs" id="tabs">
+				  <div data-role="navbar">
+				    <ul>
+				      <li><a href="#one" data-ajax="false">Info</a></li>
+				      <li><a href="#two" data-ajax="false">Comments</a></li>
+				      <li><a href="#three" data-ajax="false">Live Feed</a></li>
+				    </ul>
+				  </div>
+				  <div id="one" class="ui-body-d ui-content">
+				    <!--- // Info goes here // -->
+				  </div>
+				  <div id="two">
+				  	<!--- // Comments go here // -->
+				  </div>				  
+				  <div id="two">
+				  	<!--- // Feed go here // -->
+				  </div>
+				</div>
+
+
 			</div>
 		</div>
 
