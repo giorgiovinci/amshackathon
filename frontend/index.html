@@ -52,32 +52,6 @@
 						// mapTypeId: google.maps.MapTypeId.ROADMAP
 					};
 					map = new google.maps.Map(document.getElementById("map-canvas"), myOptions);
-					var contentString = '<div id="content">'+
-					'<div id="siteNotice">'+
-					'</div>'+
-					'<h1 id="firstHeading" class="firstHeading">Uluru</h1>'+
-					'<div id="bodyContent">'+
-					'<p>text</p>'+
-					'</div>'+
-					'</div>';
-
-					  var infowindow = new google.maps.InfoWindow({
-					      content: contentString
-					  });
-					// Add an overlay to the map of current lat/lng
-					var marker = new google.maps.Marker({
-						position: latlng,
-						map: map,
-						title: "Greetings!"
-					});
-					google.maps.event.addListener(marker, 'click', function() {
-						/**
-						 * Load Info Window
-						 * With Current Criteria
-						 * Info about place in question
-						 */ 
-						 infowindow.open(map,marker);
-					});
 					
 					pullDataFromApi("http://phonic-presence-582.appspot.com/ams", latlng);
 				}

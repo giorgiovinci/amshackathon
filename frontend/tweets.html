@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>Google Maps - jQuery Mobile Demos</title>
+		<link rel="stylesheet" href="css/Bootstrap.min.css">
+		<link rel="stylesheet" href="css/jquery.mobile.structure-1.4.0.min.css" />
+		<link rel="stylesheet" href="css/jquery.mobile.icons.min.css" />
+		<link rel="stylesheet" href="css/extra.css" />
+		<link rel="stylesheet" href="css/another.css" />
+		<style>
+			#map-page, #map-canvas { width: 100%; height: 100%; padding: 0; }
+		</style>
+		
+		<link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Open+Sans:300,400,700">
+		<script src="js/jquery.min.js"></script>
+		<script src="js/jquery.mobile-1.4.2.min.js"></script>
+		<script src="js/dummyClient.js"></script>
+		<!-- Google Maps JS assets are loaded at bottom of page for performance -->
+		<script>
+			$(document).ready(function(){
+				var currentPOI = $.parseJSON(localStorage.currentPOI);
+				var loadingTemplate = $('#templates').children()[0];
+				var tweetTemplate = $('#templates').children()[1];
+				var loadingForm = $(loadingTemplate).clone();
+				$("#mainPlaceholder").append(loadingForm);
+				
+				getTweets(currentPOI.latitude, currentPOI.longitude, function(success, tweets){
+					if(success==true){
+						$('#mainPlaceholder>.loadingBackground').remove();
+						if(tweets.length==0) $("#mainPlaceholder").append("<h2>Nobody tweeted from this location</h2>");
+						else
+						for(var i=0;i<tweets.length;i++){
+							var tweetForm = $(tweetTemplate).clone()[0];
+							tweetForm.children[0].innerHTML = "<img src='"+tweets[i].user_photo+"'></img>";
+							tweetForm.children[1].innerHTML = tweets[i].user_name;
+							tweetForm.children[2].innerHTML = tweets[i].text;
+							$("#mainPlaceholder").append(tweetForm);
+						}
+					};
+				})
+			});
+		</script>
+	</head>
+	<body>
+
+		<div data-role="page" id="map-page" data-url="map-page">
+			<div data-role="header" data-theme="a">
+			<h1>Maps</h1>
+			</div>
+			<div role="main" class="ui-content" id="mainPlaceholder">
+				
+			</div>
+		</div>
+	</body>
+</html>

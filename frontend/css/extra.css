@@ -93,3 +93,17 @@ img.imageContainer {
 	margin-top: 6px;
 }
 
+.authorImage{
+	float:left;
+	padding:5px;
+	clear:left;
+}
+.authorName{
+	float:left;
+	padding:5px;
+	clear:right;
+}
+.content{
+	float:left;
+	padding:5px;
+}

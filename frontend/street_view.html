@@ -16,6 +16,7 @@
 		<script src="js/jquery.min.js"></script>
 		<script src="js/orientation.js"></script>
 		<script src="js/jquery.mobile-1.4.2.min.js"></script>
+		<script src="js/dummyClient.js"></script>
 		<!-- Google Maps JS assets are loaded at bottom of page for performance -->
 		<script>
 			var storeObject = {};
@@ -61,19 +62,7 @@
 				pitch: 0
 			}));
 			panorama.setVisible(true);
-			//map.setStreetView(panorama);
-			var contentString = '<div id="content">'+
-			'<div id="siteNotice">'+
-			'</div>'+
-			'<h1 id="firstHeading" class="firstHeading">Uluru</h1>'+
-			'<div id="bodyContent">'+
-			'<p>text</p>'+
-			'</div>'+
-			'</div>';
-
-			  var infowindow = new google.maps.InfoWindow({
-				  content: contentString
-			  });
+			  
 			// Add an overlay to the map of current lat/lng
 			var marker = new google.maps.Marker({
 				position: defaultLatLng,
@@ -82,70 +71,41 @@
 				title: "Greetings!"
 			});
 			
-			google.maps.event.addListener(marker, 'click', function() {
-				/**
-				 * Load Info Window
-				 * With Current Criteria
-				 * Info about place in question
-				 */ 
-				 infowindow.open(map,marker);
+			google.maps.event.addListener(panorama, 'position_changed', function() {
+				console.log(panorama.getPosition());
+				pullDataFromApi(POI_URL, panorama.getPosition().k, panorama.getPosition().A);
 			});
-			
-			pullDataFromApi("http://phonic-presence-582.appspot.com/ams", latlng);
 		}
 
-		function pullDataFromApi(dataSource, latlng) {
-			var latLngDetails = latlng.k + "," + latlng.A;
-			/*$.ajax({
-			  type: "GET",
-			  url: dataSource,
-			  dataType: "jsonp",
-			  crossDomain : true,
-			  // jsonp:'jsonp',
-			  data: { ll: latLngDetails },
-			  success: function(data, textStatus, jqXHR) {
-				alert(data);
-				console.log(data.response.venues.id);
-				// run func or return data
-			  },
-			  error: function(err) {alert('err' + err);console.log(err);}
-			});*/
-			//for testing only
-			dataSource = "data.json";
-			$.get( dataSource,  { ll: latLngDetails }, function( data ) {
-				placeMarkers(data);
-			});
-			
+		function pullDataFromApi(dataSource, latitude, longitude) {
+			getPOIs(latitude, longitude, function(success, data){
+				if(success) placeMarkers(data);
+			})
 		}
 
 		function placeMarkers(data) {
-
 			var mapDetailArray = [];
 			var shape = {
 				coords: [1, 1, 1, 20, 18, 20, 18 , 1],
 				type: 'poly'
 			};
-
+			
 			$.each(data, function(i, val){
 				var newLat = new google.maps.LatLng(val.lat, val.lng);
 				var mapDetails = new google.maps.Marker({
 					position: newLat,
 					map: map,
-					// shape: shape,
 					title: val.name,
 					index: i
 				});
+				
 				google.maps.event.addListener(mapDetails, 'click', function() {
-					/**
-					 * Load Page
-					 * Pop The transition
-					 * Info about place in question
-					 * All other things
-					 */ 
+					 storeObject = {};
+					 storeObject.latitude = val.lat;
+					 storeObject.longitude = val.lng;
+					 localStorage.currentPOI = JSON.stringify(storeObject);
 					 storeObject = val;
-					 console.log(storeObject);
 					 localStorage.data = JSON.stringify(storeObject);
-					 console.log(localStorage.data = JSON.stringify(storeObject));
 					 window.location.href = "single.html";
 				});
 			});

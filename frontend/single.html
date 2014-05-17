@@ -8,6 +8,7 @@
 		<link rel="stylesheet" href="css/jquery.mobile.structure-1.4.0.min.css" />
 		<link rel="stylesheet" href="css/jquery.mobile.icons.min.css" />
 		<link rel="stylesheet" href="css/extra.css" />
+		<script src="js/dummyClient.js"></script>
 		<style>
 			#map-page, #map-canvas { width: 100%; height: 100%; padding: 0; }
 		</style>
@@ -49,7 +50,7 @@
 				$("#single-page-header").append("<h1 class='ui-title' role='heading'>" + checkItemExists("title", itemJSON.name) + "</h1>");
 				$("#one").append(buildPage);
 				$("#two").append("<div id='commentHolder'><h3>Comments:</h3></div>");
-
+				processTweets();
 
 				/**
 				 * Call the AJAX method
@@ -114,9 +115,7 @@
 							commentConcat += buildCommentHTML;
 						});						
 					}
-
 					$("#commentHolder").append(commentConcat);
-
 				}
 
 				/**
@@ -137,8 +136,27 @@
 						}
 					});
 				}
-
-
+				
+				function processTweets(){
+					var currentPOI = $.parseJSON(localStorage.currentPOI);
+					var tweetTemplate = $('#templates').children()[0];
+					
+					getTweets(currentPOI.latitude, currentPOI.longitude, function(success, tweets){
+						if(success==true){
+							if(tweets.length==0) $("#three").append("<h2>Nobody tweeted from this location</h2>");
+							else{
+								
+								for(var i=0;i<tweets.length;i++){
+									var tweetForm = $(tweetTemplate).clone()[0];
+									tweetForm.children[0].innerHTML = "<img src='"+tweets[i].user_photo+"'></img>";
+									tweetForm.children[1].innerHTML = tweets[i].user_name+": ";
+									tweetForm.children[2].innerHTML = tweets[i].text;
+									$("#three").append(tweetForm);
+								}
+							}
+						};
+					})
+				}
 			});
 
 		</script>
@@ -168,12 +186,19 @@
 				  <div id="two">
 				  	<!--- // Comments go here // -->
 				  </div>				  
-				  <div id="two">
+				  <div id="three">
 				  	<!--- // Feed go here // -->
 				  </div>
 				</div>
 
-
+				<div id="templates" style="display:none;">
+					<div class="tweetTemplate">
+						<div class="authorImage"></div>
+						<div class="authorName"></div>
+						<div class="content"></div>
+					</div>
+				</div>
+				
 			</div>
 		</div>
 
