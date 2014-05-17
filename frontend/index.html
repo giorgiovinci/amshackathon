@@ -84,7 +84,7 @@
 
 				function pullDataFromApi(dataSource, latlng) {
 					var latLngDetails = latlng.k + "," + latlng.A;
-					/*$.ajax({
+					$.ajax({
 					  type: "GET",
 					  url: dataSource,
 					  dataType: "jsonp",
@@ -97,12 +97,12 @@
 					  	// run func or return data
 					  },
 					  error: function(err) {alert('err' + err);console.log(err);}
-					});*/
-					//for testing only
-					dataSource = "data.json";
-					$.get( dataSource,  { ll: latLngDetails }, function( data ) {
-						placeMarkers(data);
 					});
+					//for testing only
+					// dataSource = "data.json";
+					// $.get( dataSource,  { ll: latLngDetails }, function( data ) {
+					// 	placeMarkers(data);
+					// });
 					
 				}
 
