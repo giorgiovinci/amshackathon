@@ -81,12 +81,10 @@
 						// jsonp:'jsonp',
 						data: { ll: latLngDetails },
 						success: function(data, textStatus, jqXHR) {
-							alert(data);
 							console.log(data.response.venues.id);
 							// run func or return data
 						},
 						error: function(err) {
-							alert('err' + err);
 							console.log(err);
 						}
 					});
