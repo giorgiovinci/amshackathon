@@ -7,6 +7,7 @@
 		<link rel="stylesheet" href="css/Bootstrap.min.css">
 		<link rel="stylesheet" href="css/jquery.mobile.structure-1.4.0.min.css" />
 		<link rel="stylesheet" href="css/jquery.mobile.icons.min.css" />
+		<link rel="stylesheet" href="css/extra.css" />
 		<style>
 			#map-page, #map-canvas { width: 100%; height: 100%; padding: 0; }
 		</style>
@@ -16,16 +17,19 @@
 		<script src="js/jquery.mobile-1.4.2.min.js"></script>
 		<!-- Google Maps JS assets are loaded at bottom of page for performance -->
 		<script>
+			var storeObject = {};
 			/*
 			 * Google Maps documentation: http://code.google.com/apis/maps/documentation/javascript/basics.html
 			 * Geolocation documentation: http://dev.w3.org/geo/api/spec-source.html
 			 */
 			$( document ).on( "pagecreate", "#map-page", function() {
 				var defaultLatLng = new google.maps.LatLng(34.0983425, -118.3267434);  // Default to Hollywood, CA when no geolocation support
+
 				if ( navigator.geolocation ) {
 					function success(pos) {
 						// Location found, show map with these coordinates
 						drawMap(new google.maps.LatLng(pos.coords.latitude, pos.coords.longitude));
+						// google.maps.event.addDomListener(window, 'load', initialize);
 					}
 					function fail(error) {
 						drawMap(defaultLatLng);  // Failed to find location, show default map
@@ -39,20 +43,128 @@
 					var myOptions = {
 						zoom: 10,
 						center: latlng,
-						mapTypeId: google.maps.MapTypeId.ROADMAP
+						// mapTypeId: google.maps.MapTypeId.ROADMAP
 					};
 					var map = new google.maps.Map(document.getElementById("map-canvas"), myOptions);
+					var contentString = '<div id="content">'+
+					'<div id="siteNotice">'+
+					'</div>'+
+					'<h1 id="firstHeading" class="firstHeading">Uluru</h1>'+
+					'<div id="bodyContent">'+
+					'<p>text</p>'+
+					'</div>'+
+					'</div>';
+
+					  var infowindow = new google.maps.InfoWindow({
+					      content: contentString
+					  });
 					// Add an overlay to the map of current lat/lng
 					var marker = new google.maps.Marker({
 						position: latlng,
 						map: map,
 						title: "Greetings!"
 					});
+					placeMarkers(pullDataFromApi("http://phonic-presence-582.appspot.com/ams", latlng), map, latlng);
+					google.maps.event.addListener(marker, 'click', function() {
+						/**
+						 * Load Info Window
+						 * With Current Criteria
+						 * Info about place in question
+						 */ 
+						 infowindow.open(map,marker);
+					});
+				}
+
+				function pullDataFromApi(dataSource, latlng) {
+
+					var latLngDetails = latlng.k + "," + latlng.A;
+
+					console.log( latLngDetails );
+
+					$.ajax({
+					  type: "GET",
+					  url: dataSource,
+					  dataType: "jsonp",
+					  crossDomain : true,
+					  // jsonp:'jsonp',
+					  data: { ll: latLngDetails },
+					  success: function(data) {
+
+					  	console.log(data.response.venues.id);
+					  	// run func or return data
+					  },
+					  error: function() {}
+					});
+
+					var data = {
+						0: {
+							"shop_image": "http://static.guim.co.uk/sys-images/Film/Pix/pictures/2011/10/11/1318348403506/All-the-fun-of-the-fur----007.jpg", 
+							"description": "Come in, now!", 
+							"number": "20", 
+							"street": "herengracht", 
+							"id": 1, 
+							"building": "", 
+							"end": "22:30", 
+							"name": "Van Gogh Museum", 
+							"longitude": 4.767424, 
+							"start": "08:30", 
+							"latitude": 52.307687, 
+							"type": "museum"}, 
+						1: {
+							"shop_image": "http://static.guim.co.uk/sys-images/Film/Pix/pictures/2011/10/11/1318348403506/All-the-fun-of-the-fur----007.jpg", 
+							"description": "Come in, now!", 
+							"number": "20", 
+							"street": "herengracht", 
+							"id": 2, 
+							"building": "", 
+							"end": "22:30", 
+							"name": "Van Gogh Museum2", 
+							"longitude":4.8731, 
+							"start": "08:30", 
+							"latitude": 52.3389,  
+							"type": "museum"}
+					};
+					return data;
+				}
+
+				function placeMarkers(data, map, origLat) {
+
+					var mapDetailArray = [];
+					var shape = {
+						coords: [1, 1, 1, 20, 18, 20, 18 , 1],
+						type: 'poly'
+					};
+
+					$.each(data, function(i, val){
+						var newLat = new google.maps.LatLng(val.latitude, val.longitude);
+						var mapDetails = new google.maps.Marker({
+							position: newLat,
+							map: map,
+							// shape: shape,
+							title: val.name,
+							index: i
+						});
+						google.maps.event.addListener(mapDetails, 'click', function() {
+							/**
+							 * Load Page
+							 * Pop The transition
+							 * Info about place in question
+							 * All other things
+							 */ 
+							 storeObject = val;
+							 console.log(storeObject);
+							 localStorage.data = JSON.stringify(storeObject);
+							 console.log(localStorage.data = JSON.stringify(storeObject));
+							 window.location.href = "single.html";
+						});
+					});
 				}
 			});
+
 		</script>
 	</head>
 	<body>
+		<!-- First Page -->
 		<div data-role="page" id="map-page" data-url="map-page">
 			<div data-role="header" data-theme="a">
 			<h1>Maps</h1>
@@ -61,6 +173,7 @@
 				<!-- map loads here... -->
 			</div>
 		</div>
+
 		<!-- Load map assets at bottom for performance -->
 		<script type="text/javascript" src="js/jquery.gmap.js"></script>
 		<script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false"></script>
