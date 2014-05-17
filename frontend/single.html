@@ -21,8 +21,7 @@
 
 				var itemJSON = $.parseJSON(localStorage.data);
 
-				// console.log(itemJSON);
-				ajaxPullTest(itemJSON.id, "http://10.0.1.54:8080/ams/comments");
+
 
 				var buildPage = "<div class='container'>";
 				buildPage += "<div class='mainHolder'>";
@@ -54,6 +53,9 @@
 				$("#single-page-header").append("<h1 class='ui-title' role='heading'>" + checkItemExists("title", itemJSON.name) + "</h1>");
 				$("#single-canvas").append(buildPage);
 
+								// console.log(itemJSON);
+				ajaxPullTest(itemJSON.id, "http://10.0.1.54:8080/ams/comments");
+
 
 
 
@@ -84,7 +86,7 @@
 						url: dataSource,
 						dataType: "jsonp",
 						crossDomain : true,
-						// jsonp:'jsonp',
+						jsonp:'jsonp',
 						data: { id: itemID },
 						success: function(data, textStatus, jqXHR) {
 							alert(data);

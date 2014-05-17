@@ -5,6 +5,8 @@ import logging
 from google.appengine.api import urlfetch
 import cmath
 import math
+from ams.forthsquare import ForthSquare
+from ams.twitter import Twitter
 
 '''
 #https://github.com/tweepy/tweepy
@@ -73,73 +75,15 @@ def tweets(request):
     return response
 '''
 
-'''
-event1 = {\
-    "id" : 1, \
-    "name" : "Van Gogh Museum", \
-    "description" : "Come in, now!", \
-    "latitude" : 42,\
-    "longitude" : 20,\
-    "start" : "08:30",\
-    "end" : "22:30",\
-    "street" : "herengracht",\
-    "number" : "20",\
-    "building" : "",\
-    "shop-image" : "http://instagram.com/some.jpg",\
-    "type" : "museum"\
-  }
-
-def home(request):
-    print "Event: " + str(event1)
-    jsonEvent1 = json.dumps([event1])
-    print "JSON: " + str(jsonEvent1)
-    return http.HttpResponse(jsonEvent1, 
-      content_type='application/json')
-'''
 
 OAUTH_TOKEN='3NX4ATMVS35LKIP25ZOKIVBRGAHFREKGNHTAKQ5NPGMCWOE0'
+
 DEFAULT_RADIUS = 100.0
-DEFAULT_SPREAD_ANGLE = 60
 
-logger = logging.getLogger(__name__)
+forthsquare = ForthSquare()
+twitter = Twitter()
 
-def venueInRadarRange(lat0, lng0, alpha, beta, gamma, radius, spreadAngle, lat, lng, distance):
-    #TODO:implement the function
-    difflat = lat - lat0
-    difflng = lng - lng0
-
-    print 'diff:', difflat, difflng
-
-    (r, phi) = cmath.polar(complex(difflat, difflng))
-    phi = math.degrees(phi)
-    if phi < 0:
-        phi += 360
-    print 'r, phi:', r, phi, alpha
-    print 'r, radius, distance:', r, radius, distance
-    print 'phi, alpha:', phi, alpha, abs(phi - alpha)
-
-    result = distance < radius and abs(phi - alpha) < spreadAngle / 2.0
-    print result
-
-    return result
-
-
-def getVenueData(venue):
-    res = { 
-    'lat'  : venue.get('location').get('lat'),
-    'lng'  : venue.get('location').get('lng'),
-    'id'   : venue['id'].encode("utf-8"),
-    'name' : venue['name'].encode("utf-8") }
-
-    if 'address' in venue.get('location'):
-        res['address'] = venue.get('location').get('address')
-
-    if 'postalCode' in venue.get('location'):
-        res['postalCode'] = venue.get('location').get('postalCode')
-
-    if 'formattedPhone' in venue.get('contact'):
-        res['formattedPhone'] = venue.get('contact').get('formattedPhone')
-
+<<<<<<< HEAD
 
     photo = getPhoto(venue['id'])
     if photo:
@@ -151,13 +95,15 @@ def getVenueData(venue):
 
 
     return res
+=======
+>>>>>>> 61a216a9f7ca2284cfdba41fde188dc1c571e4f4
 
+def venues(request):
 
-def home(request):
 #    pos = '52.378688,4.900504'
 #    print 'request:', request
 #    logger.debug('request')
-
+    t = Twitter()
     if not request.GET or not request.GET.get(u'll'):
         return http.HttpResponseBadRequest('Wrong data')
 
@@ -205,7 +151,7 @@ def home(request):
                 print 'distance:', distance
                 if venueInRadarRange(lat0, lng0, alpha, beta, gamma, radius, DEFAULT_SPREAD_ANGLE, lat, lng, distance):
 #                    res = {'lat' : lat, 'lng': lng, 'id' : i['id'].encode("utf-8"), 'name' : i['name'].encode("utf-8") }
-                    venuesInRadar.append(getVenueData(i))
+                    venuesInRadar.append(forthsquare.getVenueData(i))
 
         print len(venuesInRadar)
         print venuesInRadar
@@ -213,7 +159,7 @@ def home(request):
     else:
         venuesInRadar = list()
         for i in venues:
-            venuesInRadar.append(getVenueData(i))
+            venuesInRadar.append(forthsquare.getVenueData(i))
 
     '''
         if len(venuesInRadar) == 1:
@@ -257,6 +203,7 @@ def comments(request):
     response["Access-Control-Allow-Origin"] = "*"
     return response
 
+<<<<<<< HEAD
 def getPhoto(id):
     foursquareRequest = 'https://api.foursquare.com/v2/venues/%s/photos?limit=1&sort=recent&oauth_token=%s&v=20140517' % (id, OAUTH_TOKEN)
 
@@ -269,6 +216,9 @@ def getPhoto(id):
     print json_data
 
     return json_data
+=======
+
+>>>>>>> 61a216a9f7ca2284cfdba41fde188dc1c571e4f4
 
 def photos(request):
 #    id = '4a688ba1f964a52088ca1fe3'
@@ -287,6 +237,18 @@ def photos(request):
         return http.DoesNotExist('photo does not exist')
 
     response = http.HttpResponse(json.dumps(json_raw), 
+      content_type='application/json')
+    response["Access-Control-Allow-Origin"] = "*"
+    return response
+
+def tweets(request):
+    radius="0.02km"
+    if not request.GET or not request.GET.get(u'll'):
+      return http.HttpResponseBadRequest('Wrong data')
+
+    pos = request.GET.get(u'll')
+    result = twitter.tweets(radius, pos)
+    response = http.HttpResponse(result, 
       content_type='application/json')
     response["Access-Control-Allow-Origin"] = "*"
     return response
